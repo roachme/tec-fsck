@@ -15,6 +15,11 @@ local function elog(status, fmt, ...)
     return status
 end
 
+local function llog(status, fmt, ...)
+    io.stdout:write(string.format(fmt .. "\n", ...))
+    return status
+end
+
 local function _isdir()
 end
 
@@ -92,10 +97,11 @@ function FSCK.check(basic)
     for env in lfs.dir(basic.taskdir) do
         -- TODO: check that it's directory and nothing else
         if string.sub(env, 1, 1) ~= "." then
-            print("hehe", env)
             local units = Unit.get(join_path(basic.taskdir, env))
             if not Unit.check_env(units) then
                 elog(1, "error in environment units")
+            else
+                llog(0, "'%s' environment units OK", env)
             end
         end
     end
