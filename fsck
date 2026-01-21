@@ -50,7 +50,7 @@ function Unit.get(fname)
     return units
 end
 
-function Unit.check_prj(units)
+function Unit.check_env(units)
     local status = true
     local _units = { "desc" }
 
@@ -63,7 +63,7 @@ function Unit.check_prj(units)
     return status
 end
 
-function Unit.check_brd(units)
+function Unit.check_desk(units)
 end
 
 function Unit.check_task(units)
@@ -87,15 +87,15 @@ end
 
 function FSCK.check(basic)
     local columns = {}
-    local projects = {}
+    local envs = {}
 
-    for prj in lfs.dir(basic.taskdir) do
+    for env in lfs.dir(basic.taskdir) do
         -- TODO: check that it's directory and nothing else
-        if string.sub(prj, 1, 1) ~= "." then
-            print("hehe", prj)
-            local units = Unit.get(join_path(basic.taskdir, prj))
-            if not Unit.check_prj(units) then
-                elog(1, "error in project units")
+        if string.sub(env, 1, 1) ~= "." then
+            print("hehe", env)
+            local units = Unit.get(join_path(basic.taskdir, env))
+            if not Unit.check_env(units) then
+                elog(1, "error in environment units")
             end
         end
     end
@@ -130,7 +130,7 @@ local function main()
     local lastidx = 1
     local basic = { }
 
-    for optopt, optarg, optind in getopt(arg, ":b:hi:p:T:P:") do
+    for optopt, optarg, optind in getopt(arg, ":d:e:hi:T:P:") do
         if optopt == "?" then
             return elog(1, "unrecognized option", arg[optind - 1])
         end
@@ -139,14 +139,14 @@ local function main()
             basic.taskdir = optarg
         elseif optopt == "P" then
             basic.pgndir = optarg
-        elseif optopt == "b" then
-            basic.board = optarg
+        elseif optopt == "d" then
+            basic.desk = optarg
+        elseif optopt == "e" then
+            basic.env = optarg
         elseif optopt == "h" then
             showhelp = true
         elseif optopt == "i" then
             basic.task = optarg
-        elseif optopt == "p" then
-            basic.project = optarg
         end
     end
 
